@@ -17,12 +17,13 @@ static struct Button* head_handle = NULL;
   * @param  active_level: pressed GPIO level.
   * @retval None
   */
-void button_init(struct Button* handle, uint8_t(*pin_level)(), uint8_t active_level)
+void button_init(struct Button* handle, uint8_t(*pin_level)(uint8_t), uint8_t active_level, uint8_t key_id)
 {
 	memset(handle, 0, sizeof(struct Button));
 	handle->event = (uint8_t)NONE_PRESS;
 	handle->hal_button_Level = pin_level;
-	handle->button_level = handle->hal_button_Level();
+	handle->key_id = key_id;
+	handle->button_level = handle->hal_button_Level(handle->key_id);
 	handle->active_level = active_level;
 }
 
@@ -55,7 +56,7 @@ PressEvent get_button_event(struct Button* handle)
   */
 void button_handler(struct Button* handle)
 {
-	uint8_t read_gpio_level = handle->hal_button_Level();
+	uint8_t read_gpio_level = handle->hal_button_Level(handle->key_id);
 
 	//ticks counter working..
 	if((handle->state) > 0) handle->ticks++;
